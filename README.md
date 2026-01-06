@@ -1,6 +1,6 @@
 # PIAM - Pusat Informasi Akademik Mahasiswa
 
-Single Page Application (SPA) untuk sistem informasi akademik universitas.
+Single Page Application (SPA) untuk sistem informasi akademik universitas dengan desain yang mengikuti prinsip-prinsip Interaksi Manusia dan Komputer (IMK/HCI).
 
 ## Fitur Utama
 
@@ -11,12 +11,25 @@ Single Page Application (SPA) untuk sistem informasi akademik universitas.
 - ✅ Jadwal Kuliah & Ujian
 - ✅ Panduan Administrasi (SPA, bukan PDF)
 - ✅ Informasi Layanan Kampus
+- ✅ **Baru**: Search functionality di header
+- ✅ **Baru**: Breadcrumb navigation untuk orientasi
+- ✅ **Baru**: Loading states dengan spinner
+- ✅ **Baru**: Konsistensi visual dengan CSS variables
+- ✅ **Baru**: Perbaikan keterbacaan dan feedback sistem
+
+## Prinsip HCI yang Diterapkan
+
+- **Heuristik Nielsen**: Visibility of system status, user control, consistency, error prevention
+- **User-Centered Design**: Fokus pada pengalaman mahasiswa sebagai pengguna utama
+- **Konsistensi Antarmuka**: Font, warna, dan spacing seragam
+- **Pengurangan Beban Kognitif**: Hierarki visual jelas, grouping informasi
 
 ## Teknologi
 
 - **Frontend**: React + React Router
 - **Backend**: Node.js + Express
 - **Database**: MySQL
+- **Styling**: CSS dengan custom properties untuk konsistensi
 
 ## Instalasi
 
@@ -43,10 +56,16 @@ Backend API akan berjalan di http://localhost:5000
 ## Struktur Project
 
 ```
-├── client/          # Frontend React
-├── server/          # Backend API
-├── database/        # SQL schema
-└── package.json
+├── client/              # Frontend React
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Layout/     # Header, Sidebar, Layout
+│   │   │   ├── Breadcrumb.js # Navigasi breadcrumb
+│   │   │   └── Loading.js   # Komponen loading
+│   │   └── pages/          # Halaman-halaman aplikasi
+├── server/              # Backend API Node.js
+├── database/            # Schema SQL MySQL
+└── dokumentasi/         # File dokumentasi
 ```
 
 

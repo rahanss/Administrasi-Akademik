@@ -32,13 +32,17 @@ Aplikasi menggunakan pola navigasi hybrid:
 client/
 ├── src/
 │   ├── components/
-│   │   └── Layout/
-│   │       ├── Layout.js       # Layout utama dengan Header + Sidebar
-│   │       ├── Layout.css
-│   │       ├── Header.js       # Header global dengan search
-│   │       ├── Header.css
-│   │       ├── Sidebar.js      # Sidebar dinamis berdasarkan modul
-│   │       └── Sidebar.css
+│   │   ├── Layout/
+│   │   │   ├── Layout.js       # Layout utama dengan Header + Sidebar
+│   │   │   ├── Layout.css
+│   │   │   ├── Header.js       # Header global dengan search
+│   │   │   ├── Header.css
+│   │   │   ├── Sidebar.js      # Sidebar dinamis berdasarkan modul
+│   │   │   └── Sidebar.css
+│   │   ├── Breadcrumb.js       # Navigasi breadcrumb (HCI)
+│   │   ├── Breadcrumb.css
+│   │   ├── Loading.js          # Komponen loading (HCI)
+│   │   └── Loading.css
 │   ├── pages/
 │   │   ├── Homepage.js         # Dashboard dengan card system
 │   │   ├── AcademicCalendar.js # Kalender akademik (narrative)
@@ -52,6 +56,24 @@ client/
 │   ├── App.js                  # Router configuration
 │   └── index.js                # Entry point
 ```
+
+## 🎨 Aspek HCI (Human-Computer Interaction)
+
+Aplikasi ini dirancang dengan mempertimbangkan prinsip-prinsip IMK/HCI untuk memberikan pengalaman pengguna yang optimal:
+
+### Komponen HCI Utama
+- **Breadcrumb Navigation**: Memberikan orientasi spatial kepada pengguna
+- **Loading States**: Feedback visual saat aplikasi memuat data
+- **Search Functionality**: Pencarian cepat berdasarkan keyword
+- **Consistent Typography**: Font Inter dengan ukuran optimal
+- **CSS Variables**: Sistem warna dan spacing yang konsisten
+
+### Prinsip Nielsen yang Diterapkan
+1. **Visibility of System Status**: Loading spinner dan pesan
+2. **User Control and Freedom**: Breadcrumb dan search untuk navigasi
+3. **Consistency and Standards**: CSS variables untuk tampilan seragam
+4. **Error Prevention**: Validasi input dan feedback visual
+5. **Recognition Rather Than Recall**: Ikon dan struktur navigasi familiar
 
 ## Struktur Backend
 

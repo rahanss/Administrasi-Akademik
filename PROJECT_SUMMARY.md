@@ -15,10 +15,14 @@ Single Page Application (SPA) untuk sistem informasi akademik universitas telah 
 - [x] Navigasi berkelanjutan tanpa konteks terputus
 
 ### ✅ Layout & Komponen
-- [x] Header Global dengan search bar
+- [x] Header Global dengan search bar (dengan functionality)
 - [x] Sidebar dinamis berdasarkan modul aktif
 - [x] Layout responsif untuk mobile & desktop
 - [x] Styling konsisten dengan warna biru institusi
+- [x] **Baru**: Komponen Breadcrumb untuk navigasi
+- [x] **Baru**: Komponen Loading dengan spinner
+- [x] **Baru**: CSS Variables untuk konsistensi visual
+- [x] **Baru**: Font Inter untuk keterbacaan yang lebih baik
 
 ### ✅ Halaman & Fitur
 - [x] **Homepage**: Dashboard dengan card navigasi + kalender ringkas
@@ -74,6 +78,36 @@ baak/
 ├── QUICKSTART.md          # Quick start guide
 └── PROJECT_SUMMARY.md     # File ini
 ```
+
+## 🎨 Perbaikan HCI (Human-Computer Interaction)
+
+Proyek ini telah diperbaiki berdasarkan prinsip-prinsip IMK/HCI untuk meningkatkan pengalaman pengguna mahasiswa:
+
+### ✅ Prinsip Nielsen yang Diterapkan
+- **Visibility of System Status**: Loading states dengan spinner dan pesan
+- **Match Between System and Real World**: Bahasa Indonesia, ikon familiar
+- **User Control and Freedom**: Breadcrumb navigation, search functionality
+- **Consistency and Standards**: CSS variables untuk warna dan font seragam
+- **Error Prevention**: Validasi input search, feedback visual
+- **Recognition Rather Than Recall**: Breadcrumb, sidebar dengan ikon
+- **Flexibility and Efficiency of Use**: Search shortcut, navigasi cepat
+- **Aesthetic and Minimalist Design**: Desain clean dengan hierarki visual jelas
+- **Help Users Recognize and Recover from Errors**: Breadcrumb sebagai orientasi
+- **Help and Documentation**: Navigasi intuitif tanpa dokumentasi eksternal
+
+### ✅ Komponen HCI Baru
+- **Breadcrumb Component**: Navigasi hierarkis untuk orientasi spatial
+- **Loading Component**: Feedback visual saat memuat data
+- **Search Functionality**: Pencarian cepat berdasarkan keyword
+- **CSS Variables**: Sistem warna dan typography konsisten
+- **Improved Typography**: Font Inter dengan ukuran optimal untuk readability
+
+### ✅ Manfaat untuk Pengguna
+- **Kejelasan Navigasi**: Breadcrumb mengurangi kebingungan lokasi
+- **Keterbacaan**: Font dan spacing yang lebih baik
+- **Konsistensi**: Tampilan seragam di seluruh aplikasi
+- **Feedback**: Loading states memberikan kepastian sistem bekerja
+- **Learnability**: Pattern navigasi yang konsisten memudahkan pembelajaran
 
 ## 🚀 Cara Menjalankan
 
