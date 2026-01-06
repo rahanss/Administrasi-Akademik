@@ -1,0 +1,144 @@
+.news-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.news-header {
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #1e40af;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.news-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.news-date-full {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.news-badge {
+  background: #1e40af;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.news-title-full {
+  font-size: 2rem;
+  color: #1e40af;
+  margin-bottom: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.news-image {
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.news-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.news-content-full {
+  line-height: 1.8;
+  color: #374151;
+  font-size: 1rem;
+  margin-bottom: 3rem;
+}
+
+.news-content-full h2 {
+  font-size: 1.75rem;
+  color: #1e40af;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.news-content-full h3 {
+  font-size: 1.5rem;
+  color: #1e40af;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.news-content-full p {
+  margin-bottom: 1rem;
+  text-align: justify;
+}
+
+.news-content-full ul,
+.news-content-full ol {
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.news-content-full li {
+  margin-bottom: 0.5rem;
+}
+
+.news-content-full strong {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.news-footer {
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.news-loading,
+.news-error {
+  text-align: center;
+  padding: 4rem;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.news-error h2 {
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .news-page {
+    padding: 1rem;
+  }
+
+  .news-title-full {
+    font-size: 1.75rem;
+  }
+
+  .news-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
