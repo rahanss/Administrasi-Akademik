@@ -1,7 +1,12 @@
 # Dependencies
 node_modules/
-client/node_modules/
-server/node_modules/
+frontend-apps/node_modules/
+frontend-cms/node_modules/
+backend/node_modules/
+frontend/app/node_modules/
+frontend/cms/node_modules/
+server/node_modules/  # Legacy, akan dihapus setelah rename
+client/node_modules/  # Legacy, akan dihapus setelah rename
 
 # Environment variables
 .env
@@ -12,8 +17,12 @@ server/node_modules/
 server/.env
 
 # Build outputs
-client/build/
+frontend-apps/build/
+frontend-cms/build/
+frontend/app/build/
+frontend/cms/build/
 dist/
+client/build/  # Legacy, akan dihapus setelah rename
 
 # Logs
 *.log
@@ -34,5 +43,7 @@ Thumbs.db
 
 # Testing
 coverage/
+
+
 
 

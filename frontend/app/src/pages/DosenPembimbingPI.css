@@ -1,0 +1,215 @@
+.dosen-pi-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #1e40af;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.dosen-pi-header {
+  margin-bottom: 2rem;
+}
+
+.dosen-pi-title {
+  font-size: 2rem;
+  color: #1e40af;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.dosen-pi-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.search-container {
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #1e40af;
+}
+
+.filter-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.filter-select {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1e40af;
+}
+
+.dosen-pi-table-container {
+  overflow-x: auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.dosen-pi-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1000px;
+}
+
+.dosen-pi-table thead {
+  background: #1e40af;
+  color: white;
+}
+
+.dosen-pi-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+.dosen-pi-table tbody tr {
+  transition: background-color 0.2s;
+}
+
+.dosen-pi-table tbody tr.odd-row {
+  background-color: #f9fafb;
+}
+
+.dosen-pi-table tbody tr.even-row {
+  background-color: white;
+}
+
+.dosen-pi-table tbody tr:hover {
+  background-color: #eff6ff;
+}
+
+.dosen-pi-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.col-kelas {
+  width: 100px;
+  text-align: center;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.col-kelompok {
+  width: 80px;
+  text-align: center;
+  font-weight: 600;
+  color: #111827;
+}
+
+.col-npm {
+  width: 120px;
+  font-family: 'Courier New', monospace;
+  font-weight: 500;
+  color: #111827;
+}
+
+.col-nama {
+  min-width: 250px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.col-dosen {
+  min-width: 200px;
+  font-weight: 500;
+  color: #1e40af;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.dosen-pi-info {
+  text-align: center;
+  padding: 1rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.info-text {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .dosen-pi-page {
+    padding: 1rem;
+  }
+
+  .dosen-pi-title {
+    font-size: 1.5rem;
+  }
+
+  .filter-container {
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .dosen-pi-table {
+    font-size: 0.85rem;
+    min-width: 800px;
+  }
+
+  .dosen-pi-table th,
+  .dosen-pi-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .col-nama {
+    min-width: 200px;
+  }
+}
