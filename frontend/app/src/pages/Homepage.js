@@ -12,7 +12,7 @@ const Homepage = () => {
     const fetchBerita = async () => {
       try {
         const response = await axios.get('/api/berita', {
-          params: { limit: 4 }
+          params: { limit: 3 }
         });
         console.log('Berita fetched:', response.data);
         setBeritaList(response.data || []);
@@ -31,59 +31,87 @@ const Homepage = () => {
   const cards = [
     {
       id: 1,
+      title: 'Jadwal Kelas',
+      icon: '/icons/JamKuliah.png',
+      route: '/jadwal-kelas',
+      description: 'Cari jadwal berdasarkan kelas atau dosen'
+    },
+    {
+      id: 2,
       title: 'Kalender Akademik',
       icon: '/icons/KalenderAkademik.png',
       route: '/kalender-akademik',
       description: 'Lihat jadwal kegiatan akademik semester'
     },
     {
-      id: 2,
+      id: 3,
       title: 'Daftar Mata Kuliah',
       icon: '/icons/DaftarMatkul.png',
       route: '/daftar-mata-kuliah',
       description: 'Jelajahi mata kuliah per program studi'
     },
     {
-      id: 3,
+      id: 4,
       title: 'Daftar Dosen',
       icon: '/icons/DaftarDosen.png',
       route: '/daftar-dosen-wali',
       description: 'Informasi dosen wali kelas dan pembimbing'
     },
     {
-      id: 4,
+      id: 5,
+      title: 'Koordinator Mata Kuliah',
+      icon: '/icons/DaftarMatkul.png',
+      route: '/koordinator-mata-kuliah',
+      description: 'Daftar koordinator mata kuliah per semester'
+    },
+    {
+      id: 6,
+      title: 'Dosen Pembimbing PI',
+      icon: '/icons/DaftarDosen.png',
+      route: '/dosen-pembimbing-pi',
+      description: 'Daftar dosen pembimbing penulisan ilmiah'
+    },
+    {
+      id: 7,
       title: 'Jadwal Kuliah',
       icon: '/icons/JamKuliah.png',
       route: '/jadwal-kuliah',
       description: 'Jadwal perkuliahan semester ini'
     },
     {
-      id: 5,
+      id: 8,
       title: 'Jadwal Ujian',
       icon: '/icons/JadwalUjian.png',
       route: '/jadwal-ujian',
       description: 'Jadwal UTS dan UAS'
     },
     {
-      id: 6,
-      title: 'Panduan Administrasi',
-      icon: '/icons/PanduanAdministrasi.png',
-      route: '/panduan/panduan-akademik',
-      description: 'Panduan lengkap administrasi akademik'
+      id: 9,
+      title: 'Pengurusan Ujian Bentrok',
+      icon: '/icons/JadwalUjian.png',
+      route: '/ujian-bentrok',
+      description: 'Prosedur pengurusan ujian yang bentrok'
     },
     {
-      id: 7,
-      title: 'Informasi Layanan',
-      icon: '/icons/InformasiLayanan.png',
-      route: '/informasi-layanan',
-      description: 'Layanan kampus dan kontak'
-    },
-    {
-      id: 8,
+      id: 10,
       title: 'Formulir Rencana Studi',
       icon: '/icons/FormRencanaStudi.png',
       route: '/formulir-rencana-studi',
       description: 'Informasi tentang KRS dan FRS'
+    },
+    {
+      id: 10,
+      title: 'Panduan Administrasi',
+      icon: '/icons/PanduanAdministrasi.png',
+      route: '/panduan-administrasi',
+      description: 'Panduan lengkap administrasi akademik'
+    },
+    {
+      id: 11,
+      title: 'Informasi Layanan',
+      icon: '/icons/InformasiLayanan.png',
+      route: '/informasi-layanan',
+      description: 'Layanan kampus dan kontak'
     }
   ];
 
@@ -196,6 +224,45 @@ const Homepage = () => {
                   </tbody>
                 </table>
               </div>
+
+              {/* Tabel Pelayanan Loket BAAK */}
+              <div className="homepage-service-table-section">
+                <h3 className="homepage-section-title">
+                  Pelayanan di Loket BAAK 1-8
+                </h3>
+                <div className="homepage-service-table">
+                  <table className="service-table">
+                    <thead>
+                      <tr>
+                        <th className="service-header-hari">Hari</th>
+                        <th className="service-header-waktu">Waktu</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="service-hari">Senin-Kamis</td>
+                        <td className="service-waktu">10.00-15.00 WIB</td>
+                      </tr>
+                      <tr>
+                        <td className="service-hari">(Istirahat)</td>
+                        <td className="service-waktu">12.00-13.00 WIB</td>
+                      </tr>
+                      <tr>
+                        <td className="service-hari">Jum'at</td>
+                        <td className="service-waktu">10.00-14.30 WIB</td>
+                      </tr>
+                      <tr>
+                        <td className="service-hari">(Istirahat)</td>
+                        <td className="service-waktu">11.30-13.30 WIB</td>
+                      </tr>
+                      <tr>
+                        <td className="service-hari">Sabtu</td>
+                        <td className="service-waktu">09.30-12.00 WIB</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -233,7 +300,16 @@ const Homepage = () => {
 
         {/* Bagian Berita */}
         <div className="homepage-news-section">
-          <h3 className="homepage-section-title">Berita</h3>
+          <div className="homepage-news-header">
+            <h3 className="homepage-section-title">Berita</h3>
+            <button 
+              className="homepage-news-view-all"
+              onClick={() => navigate('/berita')}
+              aria-label="Lihat semua berita"
+            >
+              lihat semua berita
+            </button>
+          </div>
           {loadingBerita ? (
             <div className="news-loading">Memuat berita...</div>
           ) : beritaList.length === 0 ? (

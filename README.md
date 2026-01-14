@@ -112,7 +112,7 @@ Backend API akan berjalan di http://localhost:5000
 
 ### Root `package.json`
 - `npm run dev` - Menjalankan backend + frontend-apps secara bersamaan
-- `npm run server` - Menjalankan backend saja
+- `npm run backend` - Menjalankan backend saja
 - `npm run frontend-apps` - Menjalankan frontend-apps saja
 - `npm run install-all` - Install dependencies untuk semua bagian
 

@@ -10,6 +10,7 @@
   overflow-x: hidden;
   z-index: 50;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
 @media (max-width: 767px) {

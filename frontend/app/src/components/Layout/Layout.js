@@ -13,12 +13,18 @@ const Layout = ({ children }) => {
   useEffect(() => {
     // Determine if sidebar should be shown based on route
     const isHomepage = location.pathname === '/';
-    setShowSidebar(!isHomepage);
+    const isInformasiLayanan = location.pathname === '/informasi-layanan';
+    const isBerita = location.pathname === '/berita' || location.pathname.startsWith('/berita/');
+    
+    // Hide sidebar for homepage, informasi layanan, and berita pages
+    setShowSidebar(!isHomepage && !isInformasiLayanan && !isBerita);
     
     // Determine current module type
     if (location.pathname.startsWith('/panduan')) {
       setCurrentModule('panduan');
-    } else if (!isHomepage) {
+    } else if (isInformasiLayanan) {
+      setCurrentModule('layanan');
+    } else if (!isHomepage && !isBerita) {
       setCurrentModule('akademik');
     } else {
       setCurrentModule(null);

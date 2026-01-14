@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "concurrently \"npm run backend\" \"npm run frontend-apps\"",
     "backend": "cd backend/server && node index.js",
-    "server": "cd server && node index.js",
     "frontend-apps": "cd frontend/app && npm start",
     "install-all": "npm install && cd backend/server && npm install && cd ../../frontend/app && npm install"
   },

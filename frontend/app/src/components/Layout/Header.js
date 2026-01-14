@@ -12,25 +12,27 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Simple search: navigate to relevant pages based on keywords
-      const query = searchQuery.toLowerCase().trim();
-      if (query.includes('kalender') || query.includes('akademik')) {
+      const query = searchQuery.trim();
+      const queryLower = query.toLowerCase();
+      
+      // Check for specific keywords first
+      if (queryLower.includes('kalender') || queryLower.includes('akademik')) {
         navigate('/kalender-akademik');
-      } else if (query.includes('mata kuliah') || query.includes('kuliah')) {
+      } else if (queryLower.includes('mata kuliah') || (queryLower.includes('kuliah') && !queryLower.includes('jadwal'))) {
         navigate('/daftar-mata-kuliah');
-      } else if (query.includes('dosen') || query.includes('wali')) {
+      } else if ((queryLower.includes('dosen') || queryLower.includes('wali')) && !queryLower.includes('jadwal')) {
         navigate('/daftar-dosen-wali');
-      } else if (query.includes('jadwal') && query.includes('kuliah')) {
+      } else if (queryLower.includes('jadwal') && queryLower.includes('kuliah')) {
         navigate('/jadwal-kuliah');
-      } else if (query.includes('jadwal') && query.includes('ujian')) {
+      } else if (queryLower.includes('jadwal') && queryLower.includes('ujian')) {
         navigate('/jadwal-ujian');
-      } else if (query.includes('panduan') || query.includes('administrasi')) {
-        navigate('/panduan/panduan-akademik');
-      } else if (query.includes('layanan') || query.includes('kontak')) {
+      } else if (queryLower.includes('panduan') || queryLower.includes('administrasi')) {
+        navigate('/panduan-administrasi');
+      } else if (queryLower.includes('layanan') || queryLower.includes('kontak')) {
         navigate('/informasi-layanan');
       } else {
-        // Default: search in news/articles
-        navigate(`/?search=${encodeURIComponent(searchQuery)}`);
+        // Default: treat as kelas/dosen search and navigate to jadwal kelas
+        navigate(`/jadwal-kelas?search=${encodeURIComponent(query)}`);
       }
       setSearchQuery('');
     }

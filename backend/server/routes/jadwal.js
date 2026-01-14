@@ -79,6 +79,65 @@ router.get('/ujian', async (req, res) => {
   }
 });
 
+// Get jadwal kelas by kelas or dosen name
+router.get('/kelas', async (req, res) => {
+  try {
+    const { search } = req.query;
+    
+    if (!search || !search.trim()) {
+      return res.json([]);
+    }
+
+    const searchTerm = search.trim();
+    
+    // Check if search is a kelas (no spaces, alphanumeric) or dosen name
+    const isKelas = /^[0-9A-Za-z]+$/.test(searchTerm) && !searchTerm.includes(' ');
+    
+    let query = `
+      SELECT 
+        kelas,
+        hari,
+        mata_kuliah,
+        waktu,
+        ruang,
+        dosen
+      FROM jadwal_kelas
+      WHERE aktif = 1
+    `;
+    const params = [];
+    
+    if (isKelas) {
+      // Search by kelas (exact match or partial)
+      query += ' AND (kelas = ? OR kelas LIKE ?)';
+      params.push(searchTerm, `%${searchTerm}%`);
+    } else {
+      // Search by dosen name (partial match, case insensitive)
+      query += ' AND (LOWER(dosen) LIKE ? OR dosen LIKE ?)';
+      const searchPattern = `%${searchTerm.toLowerCase()}%`;
+      params.push(searchPattern, searchPattern);
+    }
+    
+    query += ` ORDER BY 
+      CASE hari
+        WHEN 'Senin' THEN 1
+        WHEN 'Selasa' THEN 2
+        WHEN 'Rabu' THEN 3
+        WHEN 'Kamis' THEN 4
+        WHEN 'Jumat' THEN 5
+        WHEN 'Sabtu' THEN 6
+        WHEN 'Minggu' THEN 7
+        ELSE 8
+      END,
+      waktu`;
+    
+    const [rows] = await db.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching jadwal kelas:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
 
 

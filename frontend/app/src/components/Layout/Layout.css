@@ -7,21 +7,22 @@
 .layout-body {
   display: flex;
   flex: 1;
-  margin-top: 0;
+  margin-top: 200px;
   position: relative;
+  min-height: calc(100vh - 200px);
 }
 
 .layout-content {
   flex: 1;
   padding: 2rem;
   background-color: var(--surface-color);
-  min-height: calc(100vh - 200px);
+  min-height: 100vh;
   transition: margin-left 0.3s ease;
   width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 200px);
   font-family: var(--font-family);
+  margin-top: 0;
 }
 
 .layout-content.with-sidebar {

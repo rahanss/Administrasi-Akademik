@@ -150,6 +150,28 @@ CREATE TABLE dosen_pembimbing_pi (
     INDEX idx_aktif (aktif)
 );
 
+-- Tabel Jadwal Kelas
+CREATE TABLE jadwal_kelas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    kelas VARCHAR(50) NOT NULL,
+    hari VARCHAR(20) NOT NULL,
+    mata_kuliah VARCHAR(255) NOT NULL,
+    waktu VARCHAR(50) NOT NULL,
+    ruang VARCHAR(50) NOT NULL,
+    dosen VARCHAR(255) NOT NULL,
+    semester VARCHAR(20),
+    tahun_akademik VARCHAR(20),
+    aktif BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_kelas (kelas),
+    INDEX idx_hari (hari),
+    INDEX idx_dosen (dosen),
+    INDEX idx_semester (semester),
+    INDEX idx_tahun_akademik (tahun_akademik),
+    INDEX idx_aktif (aktif)
+);
+
 -- Tabel Jadwal Kuliah
 CREATE TABLE jadwal_kuliah (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -239,22 +261,188 @@ INSERT INTO kategori_konten (nama, slug, deskripsi, icon) VALUES
 
 -- Menu Sidebar Akademik
 INSERT INTO menu_sidebar (kategori_id, nama, slug, urutan, icon, tipe) VALUES
-(1, 'Kalender Akademik', 'kalender-akademik', 1, 'calendar', 'akademik'),
-(1, 'Daftar Mata Kuliah', 'daftar-mata-kuliah', 2, 'book', 'akademik'),
-(1, 'Daftar Dosen Wali Kelas', 'daftar-dosen-wali', 3, 'users', 'akademik'),
-(1, 'Koordinator Mata Kuliah', 'koordinator-mata-kuliah', 4, 'coordinate', 'akademik'),
-(1, 'Dosen Pembimbing PI', 'dosen-pembimbing-pi', 5, 'mentor', 'akademik'),
-(1, 'Jadwal Kuliah', 'jadwal-kuliah', 6, 'schedule', 'akademik'),
-(1, 'Jadwal Ujian', 'jadwal-ujian', 7, 'exam', 'akademik'),
-(1, 'Pengurusan Ujian Bentrok', 'ujian-bentrok', 8, 'conflict', 'akademik'),
-(1, 'Formulir Rencana Studi', 'formulir-rencana-studi', 9, 'form', 'akademik');
+(1, 'Jadwal Kelas', 'jadwal-kelas', 1, 'schedule', 'akademik'),
+(1, 'Kalender Akademik', 'kalender-akademik', 2, 'calendar', 'akademik'),
+(1, 'Daftar Mata Kuliah', 'daftar-mata-kuliah', 3, 'book', 'akademik'),
+(1, 'Daftar Dosen Wali Kelas', 'daftar-dosen-wali', 4, 'users', 'akademik'),
+(1, 'Koordinator Mata Kuliah', 'koordinator-mata-kuliah', 5, 'coordinate', 'akademik'),
+(1, 'Dosen Pembimbing PI', 'dosen-pembimbing-pi', 6, 'mentor', 'akademik'),
+(1, 'Jadwal Kuliah', 'jadwal-kuliah', 7, 'schedule', 'akademik'),
+(1, 'Jadwal Ujian', 'jadwal-ujian', 8, 'exam', 'akademik'),
+(1, 'Pengurusan Ujian Bentrok', 'ujian-bentrok', 9, 'conflict', 'akademik'),
+(1, 'Formulir Rencana Studi', 'formulir-rencana-studi', 10, 'form', 'akademik');
 
 -- Menu Sidebar Panduan
+-- Hanya menu Administrasi Umum yang memiliki konten (sub-menu)
 INSERT INTO menu_sidebar (kategori_id, nama, slug, urutan, icon, tipe) VALUES
-(2, 'Pendaftaran & Registrasi', 'panduan-pendaftaran', 1, 'register', 'panduan'),
-(2, 'Akademik', 'panduan-akademik', 2, 'academic', 'panduan'),
-(2, 'Ujian & Penilaian', 'panduan-ujian', 3, 'exam', 'panduan'),
-(2, 'Administrasi Umum', 'panduan-administrasi', 4, 'admin', 'panduan');
+(2, 'Administrasi Umum', 'panduan-administrasi', 1, 'admin', 'panduan');
+
+-- Menu Sidebar Layanan
+INSERT INTO menu_sidebar (kategori_id, nama, slug, urutan, icon, tipe) VALUES
+(3, 'Informasi Layanan', 'informasi-layanan', 1, 'service', 'layanan');
+
+-- Menu Sidebar Panduan Administrasi (Sub-menu)
+-- Note: parent_id mengacu ke menu 'panduan-administrasi' (id = 10, karena 9 menu akademik + 1 menu panduan = 10)
+INSERT INTO menu_sidebar (kategori_id, parent_id, nama, slug, urutan, icon, tipe) VALUES
+(2, 10, 'Daftar Ulang', 'daftar-ulang', 1, 'register', 'panduan'),
+(2, 10, 'Cuti Akademik', 'cuti-akademik', 2, 'leave', 'panduan'),
+(2, 10, 'Tidak Aktif Kuliah', 'tidak-aktif-kuliah', 3, 'inactive', 'panduan'),
+(2, 10, 'Pengecekan Nilai', 'pengecekan-nilai', 4, 'check', 'panduan'),
+(2, 10, 'Pindah Lokasi / Waktu Kuliah', 'pindah-lokasi-waktu', 5, 'transfer', 'panduan'),
+(2, 10, 'Pindah Jurusan', 'pindah-jurusan', 6, 'change', 'panduan');
+
+-- Halaman Konten - Panduan Administrasi
+-- Note: menu_id mengacu ke menu sidebar yang baru dibuat (id 11-16 untuk sub-menu panduan administrasi)
+INSERT INTO halaman_konten (menu_id, kategori_id, judul, slug, konten, tipe_konten) VALUES
+(11, 2, 'Daftar Ulang', 'daftar-ulang',
+'<h2>Daftar Ulang</h2>
+<p>Kegiatan Daftar Ulang adalah proses pelaksanaan daftar ulang yang menyatakan bahwa mahasiswa akan aktif mengikuti perkuliahan pada semester ganjil tahun ajaran berikutnya. Pada kegiatan ini mahasiswa akan meng-update Biodata mahasiswa, kemudian memilih periode pembayaran uang kuliah. Informasi rincian biaya kuliah dapat dilihat dari formulir daftar ulang.</p>
+
+<h3>PROSEDUR</h3>
+<ol>
+<li><strong>Mengambil Formulir Daftar Ulang</strong><br />Datang ke ruang pelayanan PSMA sesuai dengan jadual pengisian yang diumumkan di website http://baak.gunadarma.ac.id</li>
+<li><strong>Meng-update biodata dan memilih periode pembayaran uang.</strong></li>
+<li><strong>Mahasiswa menuju loket untuk mengambil Blanko Pembayaran Uang Kuliah.</strong></li>
+</ol>',
+'narrative'),
+
+(12, 2, 'Cuti Akademik', 'cuti-akademik',
+'<h2>Cuti Akademik</h2>
+<p>Cuti Akademik adalah pembebasan mahasiswa dari kewajiban mengikuti kegiatan akademik selama jangka waktu tertentu. Cuti secara keseluruhan dapat diberikan sebanyak-banyaknya untuk jangka waktu dua semester, baik berurutan maupun tidak.</p>
+
+<h3>Ketentuan / Syarat Pengajuan Cuti Akademik :</h3>
+<ul>
+<li>Mahasiswa sudah menginjak semester ke-3 (tingkat II);</li>
+<li>Mahasiswa belum mengisi dan / atau mengambil KRS sampai dengan batas akhir pengambilan KRS;</li>
+<li>Pengurusan cuti akademik diajukan sebelum masa pengurusan cuti akademik berakhir (lihat kalender akademik);</li>
+<li>Membayar biaya cuti akademik sebesar Rp 500.000,- (Lima Ratus Ribu Rupiah) untuk satu semester;</li>
+<li>Mahasiswa dinyatakan sah cuti akademik jika sudah mendapat Surat Keterangan Cuti Akademik yang dikeluarkan oleh BAAK;</li>
+<li>Pengurusan cuti akademik ini dapat diwakilkan.</li>
+</ul>
+
+<h3>Prosedur Pengajuan Cuti Akademik :</h3>
+<ol>
+<li>Mahasiswa mengambil formulir permohonan cuti yang disediakan di BAAK;</li>
+<li>Formulir diisi dengan benar dan dilampiri dengan Surat ijin cuti dari orang tua / wali;</li>
+<li>Formulir dan lampiran-lampirannya diserahkan kembali ke BAAK. Setelah mendapat persetujuan dari kepala BAAK, formulir dibawa ke Bagian Keuangan (loket 25 - 28 Gedung 4 lantai 1 Kampus D) untuk mendapatkan blanko pembayaran cuti akademik;</li>
+<li>Membayar uang cuti pada Bank yang ditunjuk;</li>
+<li>Membawa foto copy pembayaran cuti dan seluruh berkas permohonan cuti ke BAAK;</li>
+<li>Mahasiswa akan mendapatkan Surat Keterangan Cuti Akademik;</li>
+<li>Bagi mahasiswa yang sudah membayar uang kuliah, uang cuti dapat dibayarkan dengan memotong uang kuliah yang sudah dibayarkan, yaitu dengan melampirkan bukti pembayaran uang kuliah ASLI pada formulir permohonan cuti dan mengurus penyelesaian pembayaran cuti tersebut ke Bagian Keuangan. Selanjutnya mahasiswa mengikuti prosedur e dan f;</li>
+<li>Bagi mahasiswa yang DICUTIKAN karena tidak mengambil KRS sampai dengan batas waktu yang ditentukan, uang cuti dapat dibayarkan dengan memotong uang kuliah yang sudah dibayarkan. Mahasiswa yang DICUTIKAN harus tetap mengikuti prosedur cuti dan melampirkan bukti pembayaran uang kuliah ASLI pada permohonan cuti dan mengurus penyelesaian pembayaran cuti tersebut ke Bagian Keuangan. Selanjutnya mahasiswa mengikuti prosedur e dan f;</li>
+<li>Mahasiswa yang tidak mempunyai KRS tetapi tidak mengajukan permohonan cuti sampai dengan batas waktu yang ditentukan dinyatakan TIDAK AKTIF kuliah.</li>
+</ol>
+
+<p><strong>[Formulir Cuti Akademik]</strong></p>',
+'narrative'),
+
+(13, 2, 'Tidak Aktif Kuliah', 'tidak-aktif-kuliah',
+'<h2>Tidak Aktif Kuliah</h2>
+<p>Mahasiswa dinyatakan tidak aktif kuliah apabila tidak melakukan prosedur aktif (membayar uang kuliah, mengisi dan mengambil KRS sampai dengan batas waktu yang ditentukan) dan tidak mengajukan permohonan cuti akademik. Masa tidak aktif kuliah akan diperhitungkan dalam penentuan batas waktu studi.</p>
+
+<h3>Ketentuan tentang pengurusan Tidak Aktif Kuliah :</h3>
+<ul>
+<li>Mahasiswa belum mengisi dan / atau mengambil KRS sampai dengan batas akhir pengambilan KRS dan mahasiswa tidak mengajukan permohonan cuti akademik;</li>
+<li>Membayar denda tidak aktif kuliah sebesar biaya BPP per semester;</li>
+<li>Pengurusan tidak aktif kuliah dapat diwakilkan.</li>
+</ul>
+
+<h3>Prosedur Pengurusan Tidak Aktif Kuliah :</h3>
+<ol>
+<li>Mahasiswa membawa KRS dan/atau bukti pembayaran uang kuliah terakhir yang sudah dibayarkan ke BAAK. Bagi mahasiswa yang sudah tidak mempunyai kelas reguler atau mahasiswa yang tidak aktif selama 4 (empat) semester harus mendapat surat persetujuan aktif kembali dari Ketua Jurusan dan dilampirkan bersama dengan KRS dan bukti pembayaran terakhir;</li>
+<li>Dari BAAK, mahasiswa akan mendapatkan Surat Keterangan Tidak Aktif yang sudah ditanda tangani oleh Kepala BAAK tetapi belum disahkan (distempel) dan membawanya ke Bagian Keuangan (Loket 25-28 Gedung 4 Lantai 1 Kampus D);</li>
+<li>Dari Bagian Keuangan mahasiswa akan mendapatkan blanko pembayaran denda Tidak Aktif kuliah sebesar BPP dikalikan dengan jumlah semester tidak aktifnya;</li>
+<li>Mahasiswa membayar pada Bank yang ditunjuk;</li>
+<li>Mahasiswa membawa foto copy bukti pembayaran denda tidak aktif dan seluruh berkas lainnya ke BAAK;</li>
+<li>Mahasiswa akan mendapatkan Surat Keterangan Tidak Aktif Kuliah;</li>
+<li>Bagi mahasiswa yang sudah membayar uang kuliah, denda tidak aktif dapat dibayarkan dengan memotong uang kuliah yang sudah dibayarkan, yaitu dengan melampirkan bukti pembayaran uang kuliah ASLI pada Surat Keterangan Tidak Aktif dan mengurus penyelesaian pembayaran denda Tidak Aktif tersebut ke Bagian Keuangan. Selanjutnya mahasiswa mengikuti prosedur 5 dan 6.</li>
+</ol>
+
+<p><strong>[Formulir Tidak Aktif Kuliah]</strong></p>',
+'narrative'),
+
+(14, 2, 'Pengecekan Nilai', 'pengecekan-nilai',
+'<h2>Pengecekan Nilai</h2>
+<p>Pengecekan nilai pada DNS yang dimaksud adalah apabila terdapat mata kuliah yang nilainya tidak tercantum pada DNS sedangkan mata kuliah tersebut bukan mata kuliah utama/negara (tidak sesuai dengan KRS) atau apabila ada keragu-raguan pada nilai yang diperoleh dalam DNS.</p>
+
+<h3>Ketentuan / Syarat Prosedur Pengecekan Nilai :</h3>
+<ul>
+<li>Nilai pada DNS yang akan dicek adalah nilai mata kuliah yang tercantum dalam KRS semester yang bersangkutan</li>
+<li>Pengecekan dilakukan pada jadual yang telah ditentukan (selama 1 bulan setelah DNS dikeluarkan) di loket BAAK, pengecekan nilai di luar jadual yang telah ditentukan tidak dilayani</li>
+<li>BAAK tidak melayani permintaan duplikat / foto copy DNS.</li>
+</ul>
+
+<h3>Prosedur Pengecekan Nilai pada DNS :</h3>
+<ol>
+<li>Membawa foto copy DNS dan KRS semester yang bersangkutan, serta kartu praktikum (apabila yang dicek adalah mata kuliah dengan praktikum penunjang) ke loket BAAK sesuai jadual pengecekan</li>
+<li>Jika dalam pengecekan awal di BAAK terdapat :
+<ul>
+<li>Mata kuliah yang terdapat dalam KRS tetapi nilainya belum tercantum dalam DNS</li>
+<li>Kekeliruan / kerusakan dalam pencetakan DNS</li>
+</ul>
+Maka mahasiswa akan mendapat tanda terima pengecekan nilai (complain) dari BAAK yang berisi pemberitahuan tentang tanggal pengambilan hasil pengecekan. Selanjutnya mahasiswa mengikuti prosedur 4</li>
+<li>Jika dalam pemeriksaan awal di BAAK tidak terdapat kekurangan / kekeliruan / kerusakan pada DNS maka mahasiswa akan menerima kembali berkas pengecekan nilai. Proses pengecekan dianggap selesai</li>
+<li>Mahasiswa kembali ke loket BAAK sesuai dengan tanggal pengambilan hasil pengecekan dengan membawa KRS dan DNS asli (bila perlu juga harus menunjukkan kartu praktikum asli)</li>
+<li>Mahasiswa akan mendapat DNS baru hasil pengecekan nilai dengan menyerahkan DNS asli lama ke BAAK atau mendapat surat keterangan perbaikan nilai</li>
+</ol>',
+'narrative'),
+
+(15, 2, 'Pindah Lokasi / Waktu Kuliah', 'pindah-lokasi-waktu',
+'<h2>Pindah Lokasi / Waktu Kuliah</h2>
+
+<h3>Ketentuan Permohonan Pindah Kelas :</h3>
+
+<h4>Pindah Lokasi Kuliah :</h4>
+<p>Yang dimaksud dengan pindah lokasi kuliah adalah pindah dari kelas Salemba ke kelas Depok atau sebaliknya. Permohonan pindah lokasi kuliah selambat-lambatnya diajukan satu bulan sebelum perkuliahan dimulai dan dapat diproses jika memang tersedia kelas yang dimaksud. Permohonan pindah lokasi kuliah hanya diajukan satu kali selama masa studi.</p>
+
+<h4>Pindah Waktu Kuliah :</h4>
+<p>Yang dimaksud dengan pindah waktu kuliah adalah pindah dari kelas pagi ke kelas sore atau sebaliknya. Permohonan pindah waktu kuliah selambat-lambatnya diajukan satu bulan sebelum perkuliahan dimulai dan hanya dapat diproses jika memang tersedia kelas yang memungkinkan. Permohonan pindah waktu kuliah hanya diajukan satu kali selama masa studi.</p>
+
+<h3>Prosedur Pengajuan Permohonan Pindah Kelas :</h3>
+<ol>
+<li>Mahasiswa mengambil dan mengisi formulir permohonan pindah kelas yang disediakan BAAK</li>
+<li>Formulir yang telah diisi dan ditandatangani mahasiswa dikembalikan ke BAAK dengan melampirkan :
+<ul>
+<li>Satu lembar pas photo ukuran 2 x 3</li>
+<li>Surat Keterangan Bekerja dari tempat bekerja (bagi mahasiswa yang mengajukan permohonan pindah ke kelas sore)</li>
+<li>Foto copy bukti pembayaran uang kuliah untuk semester yang akan diikuti</li>
+<li>Surat persetujuan dari orang tua/wali.</li>
+</ul>
+</li>
+<li>Apabila permohonan disetujui, mahasiswa akan ditempatkan di kelas baru dan menerima Surat Keterangan Kelas.</li>
+</ol>
+
+<p><strong>[Formulir Pindah Kelas]</strong></p>',
+'narrative'),
+
+(16, 2, 'Pindah Jurusan', 'pindah-jurusan',
+'<h2>Pindah Jurusan</h2>
+<p>Pindah jurusan yang dimaksud adalah pindah jurusan yang terdapat dalam satu fakultas dan diajukan setelah mahasiswa mengikuti kuliah sekurang-kurangnya 1 (satu) semester dan sebanyak-banyaknya 2 (dua) semester.</p>
+
+<h3>Ketentuan / Syarat Pengajuan Pindah Jurusan :</h3>
+<ul>
+<li>Mahasiswa yang mengajukan pindah jurusan sudah menempuh sekurang-kurangnya 1 (satu) semester atau sebanyak-banyaknya 2 (dua) semester;</li>
+<li>Nilai yang pernah diperoleh diperhitungkan pada Jurusan baru apabila ada kesetaraan mata kuliah;</li>
+<li>Pengurusan pindah jurusan dapat dikuasakan.</li>
+</ul>
+
+<h3>Prosedur Pengajuan Pindah Jurusan :</h3>
+<ol>
+<li>Mahasiswa mengambil dan mengisi formulir permohonan pindah jurusan yang disediakan BAAK;</li>
+<li>Formulir permohonan yang telah diisi dan ditandatangani dikembalikan ke BAAK dengan melampirkan :
+<ul>
+<li>1 (satu) lembar ijazah SMA yang telah dilegalisir;</li>
+<li>1 (satu) lembar foto copy DNS terakhir;</li>
+<li>2 (dua) lembar pas photo ukuran 2 x 3.</li>
+</ul>
+</li>
+<li>Apabila permohonan disetujui maka mahasiswa akan mendapatkan Surat Keterangan Pindah Jurusan.</li>
+</ol>
+
+<p><strong>[Formulir Pindah Jurusan Fakultas Ekonomi]</strong><br />
+<strong>[Formulir Pindah Jurusan Fakultas Ilkom]</strong><br />
+<strong>[Formulir Pindah Jurusan Fakultas Teknologi Industri]</strong></p>',
+'narrative');
 
 -- Halaman Konten - Kalender Akademik
 INSERT INTO halaman_konten (menu_id, kategori_id, judul, slug, konten, tipe_konten) VALUES
@@ -436,6 +624,18 @@ INSERT INTO dosen_pembimbing_pi (kelas, kelompok, npm, nama_mhs, dosen_pembimbin
 ('3EA01', 'B', '11223908', 'VIENA NURIANI', 'KARTIKA SUKMAWATI', 'Ganjil', '2025/2026'),
 ('3EA01', 'B', '10223024', 'WAYAN GEDE GUMIAR ANGGARA REDA', 'KARTIKA SUKMAWATI', 'Ganjil', '2025/2026'),
 ('3EA01', 'C', '10223423', 'CLARISSA EMILIA ROSSI', 'LIA JULAEHA', 'Ganjil', '2025/2026');
+
+-- Sample Data Jadwal Kelas
+INSERT INTO jadwal_kelas (kelas, hari, mata_kuliah, waktu, ruang, dosen, semester, tahun_akademik) VALUES
+('3IA26', 'Senin', 'Jaringan Komputer */**', '2/3/4', 'F4173', 'SINGGIH JATMIKO', 'Ganjil', '2025/2026'),
+('3IA26', 'Selasa', 'Perancangan dan Analisis Algoritma **', '2/3/4', 'F4173', 'MIFTAH ANDRIANSYAH', 'Ganjil', '2025/2026'),
+('3IA26', 'Selasa', 'Konsep Data Mining', '6/7/8', 'F4173', 'ERICKS RACHMAT SWEDIA', 'Ganjil', '2025/2026'),
+('3IA26', 'Rabu', 'Sistem Keamanan Komputer', '2/3', 'F4173', 'AVINANTA TARIGAN', 'Ganjil', '2025/2026'),
+('3IA26', 'Rabu', 'Grafik Komputer 2 **', '4/5', 'F4173', 'BUDI SETIAWAN1', 'Ganjil', '2025/2026'),
+('3IA26', 'Kamis', 'Pemrograman WEB **', '2/3', 'F4173', 'ASTIE DARMAYANTIE', 'Ganjil', '2025/2026'),
+('3IA26', 'Kamis', 'Interaksi Manusia dan Komputer */**', '4/5/6', 'F4173', 'LINTANG YUNIAR BANOWOSARI', 'Ganjil', '2025/2026'),
+('3IA26', 'Jumat', 'Sistem Basis Data 2 */**', '1/2/3', 'F4173', 'YULIA CHALRI', 'Ganjil', '2025/2026'),
+('3IA26', 'Jumat', 'Rekayasa Perangkat Lunak 2 */**', '7/8', 'F4173', 'SURYARINI WIDODO', 'Ganjil', '2025/2026');
 
 -- Dosen Sample
 INSERT INTO dosen (nip, nama, gelar_depan, gelar_belakang, prodi_id, email, telepon, jabatan) VALUES

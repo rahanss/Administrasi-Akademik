@@ -28,12 +28,21 @@ const Sidebar = ({ currentModule }) => {
   }, [currentModule]);
 
   const handleMenuClick = (slug) => {
-    navigate(`/${slug}`);
+    // Special handling for panduan-administrasi sub-menus
+    if (slug === 'daftar-ulang' || slug === 'cuti-akademik' || slug === 'tidak-aktif-kuliah' || 
+        slug === 'pengecekan-nilai' || slug === 'pindah-lokasi-waktu' || slug === 'pindah-jurusan') {
+      navigate(`/panduan-administrasi#${slug}`);
+    } else if (slug === 'panduan-administrasi') {
+      navigate('/panduan-administrasi');
+    } else {
+      navigate(`/${slug}`);
+    }
   };
 
   const getMenuIcon = (iconName, slug) => {
     // Mapping icon berdasarkan slug untuk akurasi yang lebih baik
     const iconMap = {
+      'jadwal-kelas': '/icons/JamKuliah.png',
       'kalender-akademik': '/icons/KalenderAkademik.png',
       'daftar-mata-kuliah': '/icons/DaftarMatkul.png',
       'daftar-dosen-wali': '/icons/DaftarDosen.png',
@@ -46,7 +55,8 @@ const Sidebar = ({ currentModule }) => {
       'panduan-pendaftaran': '/icons/PanduanAdministrasi.png',
       'panduan-akademik': '/icons/PanduanAdministrasi.png',
       'panduan-ujian': '/icons/JadwalUjian.png',
-      'panduan-administrasi': '/icons/PanduanAdministrasi.png'
+      'panduan-administrasi': '/icons/PanduanAdministrasi.png',
+      'informasi-layanan': '/icons/InformasiLayanan.png'
     };
     
     // Fallback berdasarkan iconName jika slug tidak ditemukan
@@ -76,10 +86,21 @@ const Sidebar = ({ currentModule }) => {
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
-        {menuItems.map((item) => {
-          const isActive = location.pathname === `/${item.slug}` || 
-                          location.pathname.startsWith(`/${item.slug}/`);
-          return (
+        {menuItems
+          .filter((item) => item.slug !== 'panduan-administrasi') // Hide "Administrasi Umum" from sidebar
+          .map((item) => {
+            // Special handling for panduan-administrasi sub-menus
+            let isActive = false;
+            if (item.slug === 'daftar-ulang' || item.slug === 'cuti-akademik' || 
+                item.slug === 'tidak-aktif-kuliah' || item.slug === 'pengecekan-nilai' || 
+                item.slug === 'pindah-lokasi-waktu' || item.slug === 'pindah-jurusan') {
+              isActive = location.pathname === '/panduan-administrasi' && 
+                        location.hash === `#${item.slug}`;
+            } else {
+              isActive = location.pathname === `/${item.slug}` || 
+                        location.pathname.startsWith(`/${item.slug}/`);
+            }
+            return (
             <button
               key={item.id}
               className={`sidebar-item ${isActive ? 'active' : ''}`}

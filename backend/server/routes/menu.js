@@ -14,7 +14,13 @@ router.get('/:tipe', async (req, res) => {
       ORDER BY m.urutan ASC
     `, [tipe]);
     
-    res.json(rows);
+    // For panduan type, include sub-menus (those with parent_id)
+    if (tipe === 'panduan') {
+      // Get all menus including sub-menus
+      res.json(rows);
+    } else {
+      res.json(rows);
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
