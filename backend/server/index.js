@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const db = require('./config/database');
+require('dotenv').config();
 const routes = require('./routes');
 
 const app = express();
@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
+// Routes: /api (berisi /api/cms, /api/berita, /api/jadwal, dll)
 app.use('/api', routes);
 
 // Health check

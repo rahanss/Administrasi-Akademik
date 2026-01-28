@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Header.css';
 
 // Import banner image
@@ -54,6 +54,8 @@ const Header = () => {
           <p className="header-subtitle">Pusat Informasi Akademik Mahasiswa</p>
         </div>
         <div className="header-right">
+          <Link to="/about-us" className="header-about-link" title="Profil Tim">About Us</Link>
+          <Link to="/cms" className="header-cms-link" title="Panel Admin">CMS</Link>
           <form onSubmit={handleSearch} className="header-search">
             <input
               type="text"

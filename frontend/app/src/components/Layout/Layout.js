@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Breadcrumb from '../Breadcrumb';
 import './Layout.css';
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const location = useLocation();
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentModule, setCurrentModule] = useState(null);
@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
         )}
         <main className={`layout-content ${showSidebar ? 'with-sidebar' : ''}`}>
           <Breadcrumb />
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>

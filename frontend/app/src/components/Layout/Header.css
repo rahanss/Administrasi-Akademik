@@ -54,6 +54,39 @@
 
 .header-right {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-about-link {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-about-link:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.header-cms-link {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.header-cms-link:hover {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
 }
 
 .header-search {

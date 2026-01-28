@@ -251,6 +251,20 @@ CREATE TABLE berita (
     INDEX idx_created_at (created_at)
 );
 
+-- Tabel CMS Users (untuk login CMS)
+CREATE TABLE cms_users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    nama VARCHAR(255),
+    email VARCHAR(255),
+    aktif BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_username (username),
+    INDEX idx_aktif (aktif)
+);
+
 -- Insert Data Sample
 
 -- Kategori Konten
@@ -662,3 +676,11 @@ INSERT INTO berita (judul, slug, ringkasan, konten, published, featured, created
 ('Perpanjangan Masa Pengisian KRS Hingga 20 September 2025', 'perpanjangan-masa-pengisian-krs-september-2025', 'Diumumkan perpanjangan masa pengisian Kartu Rencana Studi (KRS) hingga tanggal 20 September 2025', '<h2>Perpanjangan Masa Pengisian KRS Hingga 20 September 2025</h2><p>Berdasarkan pertimbangan dan permohonan dari berbagai pihak, dengan ini diumumkan bahwa masa pengisian Kartu Rencana Studi (KRS) untuk Semester Ganjil Tahun Akademik 2025/2026 diperpanjang hingga:</p><p><strong>Tanggal Akhir:</strong> 20 September 2025</p><p>Seluruh mahasiswa diharapkan untuk segera menyelesaikan pengisian KRS sebelum batas waktu yang telah ditetapkan. Keterlambatan pengisian KRS akan mengakibatkan tidak dapat mengikuti perkuliahan pada semester ini.</p><p>Untuk bantuan teknis pengisian KRS, silakan menghubungi Bagian Akademik atau melalui sistem online BAAK.</p>', TRUE, FALSE, '2025-11-28 14:00:00'),
 ('Seminar Nasional: Teknologi dan Inovasi di Era Digital - Pendaftaran Dibuka', 'seminar-nasional-teknologi-inovasi-digital-2025', 'Pembukaan pendaftaran Seminar Nasional dengan tema Teknologi dan Inovasi di Era Digital', '<h2>Seminar Nasional: Teknologi dan Inovasi di Era Digital - Pendaftaran Dibuka</h2><p>Universitas dengan bangga mengumumkan penyelenggaraan Seminar Nasional dengan tema "Teknologi dan Inovasi di Era Digital" yang akan dilaksanakan pada:</p><p><strong>Tanggal:</strong> 15 Desember 2025</p><p><strong>Waktu:</strong> 08:00 - 17:00 WIB</p><p><strong>Tempat:</strong> Auditorium Utama Universitas</p><h3>Pembicara:</h3><ul><li>Prof. Dr. Ahmad Susanto, M.Kom - Pakar Teknologi Informasi</li><li>Dr. Siti Rahmawati, M.T - Ahli Sistem Informasi</li><li>Ir. Budi Santoso, M.Sc - Praktisi Industri Digital</li></ul><h3>Topik Pembahasan:</h3><ul><li>Perkembangan Teknologi Digital Terkini</li><li>Inovasi dalam Sistem Informasi</li><li>Transformasi Digital di Berbagai Sektor</li><li>Peluang Karir di Era Digital</li></ul><p>Pendaftaran dibuka mulai 25 November 2025. Biaya pendaftaran: Rp 50.000 untuk mahasiswa, Rp 100.000 untuk umum.</p><p>Informasi pendaftaran: seminar@university.ac.id atau hubungi Bagian Kemahasiswaan.</p>', TRUE, FALSE, '2025-11-25 11:00:00');
 
+-- CMS Users Sample
+-- Password untuk user 'admin' adalah 'admin123'
+-- Untuk membuat user baru dengan password hash:
+-- 1. cd backend/server
+-- 2. node -e "const bcrypt=require('bcrypt');bcrypt.hash('password_anda',10).then(h=>console.log(h));"
+-- 3. Copy hash yang dihasilkan dan INSERT ke tabel cms_users
+INSERT INTO cms_users (username, password_hash, nama, email, aktif) VALUES
+('admin', '$2b$10$conjTZMAsqiDW.NH3fXDdufQThe5TvgLO07n7UMNDSBaCS9p1VKsa', 'Administrator', 'admin@university.ac.id', TRUE);

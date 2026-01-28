@@ -11,7 +11,9 @@ const layananRoutes = require('./layanan');
 const beritaRoutes = require('./berita');
 const koordinatorRoutes = require('./koordinator');
 const dosenPembimbingPIRoutes = require('./dosenPembimbingPI');
+const cmsRoutes = require('./cms');
 
+router.use('/cms', cmsRoutes);
 router.use('/halaman', halamanRoutes);
 router.use('/menu', menuRoutes);
 router.use('/prodi', prodiRoutes);
