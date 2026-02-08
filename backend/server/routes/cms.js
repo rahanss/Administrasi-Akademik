@@ -3,6 +3,9 @@ const router = express.Router();
 const db = require('../config/database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { sendErrorResponse, createError } = require('../utils/errorHandler');
+const { validateRequired, sanitizeString, validateLength, isValidEmail, isValidSlug } = require('../utils/validators');
+const { loginRateLimiter } = require('../middleware/rateLimiter');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -43,25 +46,56 @@ const requireSuperAdmin = (req, res, next) => {
 
 // ============ AUTH ============
 // Login (POST /api/cms/auth/login)
-router.post('/auth/login', async (req, res) => {
+// Rate limiting untuk prevent brute force attack
+router.post('/auth/login', loginRateLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
+    
+    // Validasi input
+    const validation = validateRequired({ username, password }, ['username', 'password']);
+    if (!validation.valid) {
       return res.status(400).json({ error: 'Username dan password diperlukan' });
     }
-    const [users] = await db.query('SELECT * FROM cms_users WHERE username = ? AND aktif = 1', [username]);
+    
+    // Sanitize input
+    const sanitizedUsername = sanitizeString(username);
+    if (!validateLength(sanitizedUsername, 3, 50)) {
+      return res.status(400).json({ error: 'Username harus antara 3-50 karakter' });
+    }
+    
+    if (!validateLength(password, 6, 100)) {
+      return res.status(400).json({ error: 'Password harus antara 6-100 karakter' });
+    }
+    
+    // Query database
+    const [users] = await db.query(
+      'SELECT * FROM cms_users WHERE username = ? AND aktif = 1', 
+      [sanitizedUsername]
+    );
+    
     if (!users.length) {
+      // Jangan kasih tahu apakah username ada atau tidak (security best practice)
       return res.status(401).json({ error: 'Username atau password salah' });
     }
+    
     const user = users[0];
     if (!user.password_hash) {
-      return res.status(401).json({ error: 'Password hash tidak ditemukan' });
+      return res.status(401).json({ error: 'Username atau password salah' });
     }
+    
+    // Verify password
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({ error: 'Username atau password salah' });
     }
-    const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+    
+    // Generate token
+    const token = jwt.sign(
+      { userId: user.id, username: user.username }, 
+      JWT_SECRET, 
+      { expiresIn: '7d' }
+    );
+    
     res.json({
       token,
       user: {
@@ -72,8 +106,8 @@ router.post('/auth/login', async (req, res) => {
         role: user.role || 'admin'
       }
     });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 
@@ -130,59 +164,139 @@ router.use('/jadwal-ujian', requireSuperAdmin);
 router.get('/kategori', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM kategori_konten ORDER BY nama');
-    res.json(rows);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.json(rows || []);
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 
 router.get('/kategori/:id', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM kategori_konten WHERE id = ?', [req.params.id]);
-    if (!rows.length) return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    const id = parseInt(req.params.id);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: 'ID tidak valid' });
+    }
+    
+    const [rows] = await db.query('SELECT * FROM kategori_konten WHERE id = ?', [id]);
+    if (!rows.length) {
+      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    }
     res.json(rows[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 
 router.post('/kategori', async (req, res) => {
   try {
     const { nama, slug, deskripsi, icon } = req.body;
-    const s = slug || slugify(nama);
+    
+    // Validasi input
+    const validation = validateRequired({ nama }, ['nama']);
+    if (!validation.valid) {
+      return res.status(400).json({ 
+        error: `Field wajib: ${validation.missing.join(', ')}` 
+      });
+    }
+    
+    // Sanitize input
+    const sanitizedNama = sanitizeString(nama);
+    if (!validateLength(sanitizedNama, 1, 100)) {
+      return res.status(400).json({ error: 'Nama kategori harus antara 1-100 karakter' });
+    }
+    
+    // Generate slug jika tidak ada
+    const s = slug ? sanitizeString(slug) : slugify(sanitizedNama);
+    if (!isValidSlug(s)) {
+      return res.status(400).json({ error: 'Slug tidak valid. Hanya boleh huruf, angka, dash, dan underscore' });
+    }
+    
+    // Insert ke database
     await db.query(
       'INSERT INTO kategori_konten (nama, slug, deskripsi, icon) VALUES (?, ?, ?, ?)',
-      [nama || '', s, deskripsi || null, icon || null]
+      [sanitizedNama, s, deskripsi ? sanitizeString(deskripsi) : null, icon ? sanitizeString(icon) : null]
     );
+    
+    // Return data yang baru dibuat
     const [r] = await db.query('SELECT * FROM kategori_konten ORDER BY id DESC LIMIT 1');
     res.status(201).json(r[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 
 router.put('/kategori/:id', async (req, res) => {
   try {
     const { nama, slug, deskripsi, icon } = req.body;
+    
+    // Validasi ID
+    const id = parseInt(req.params.id);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: 'ID tidak valid' });
+    }
+    
+    // Validasi input
+    if (nama !== undefined) {
+      const sanitizedNama = sanitizeString(nama);
+      if (!validateLength(sanitizedNama, 1, 100)) {
+        return res.status(400).json({ error: 'Nama kategori harus antara 1-100 karakter' });
+      }
+    }
+    
+    // Sanitize semua input
+    const updateData = {};
+    if (nama !== undefined) updateData.nama = sanitizeString(nama);
+    if (slug !== undefined) {
+      const s = sanitizeString(slug);
+      if (!isValidSlug(s)) {
+        return res.status(400).json({ error: 'Slug tidak valid' });
+      }
+      updateData.slug = s;
+    }
+    if (deskripsi !== undefined) updateData.deskripsi = deskripsi ? sanitizeString(deskripsi) : null;
+    if (icon !== undefined) updateData.icon = icon ? sanitizeString(icon) : null;
+    
+    // Build update query dinamis
+    const fields = Object.keys(updateData);
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'Tidak ada data yang di-update' });
+    }
+    
+    const setClause = fields.map(f => `${f} = ?`).join(', ');
+    const values = fields.map(f => updateData[f]);
+    values.push(id);
+    
+    // Update database
     await db.query(
-      'UPDATE kategori_konten SET nama=?, slug=?, deskripsi=?, icon=? WHERE id=?',
-      [nama, slug, deskripsi, icon, req.params.id]
+      `UPDATE kategori_konten SET ${setClause} WHERE id = ?`,
+      values
     );
-    const [r] = await db.query('SELECT * FROM kategori_konten WHERE id=?', [req.params.id]);
-    if (!r.length) return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    
+    // Return updated data
+    const [r] = await db.query('SELECT * FROM kategori_konten WHERE id = ?', [id]);
+    if (!r.length) {
+      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    }
     res.json(r[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 
 router.delete('/kategori/:id', async (req, res) => {
   try {
-    const [r] = await db.query('DELETE FROM kategori_konten WHERE id=?', [req.params.id]);
-    if (r.affectedRows === 0) return res.status(404).json({ error: 'Kategori tidak ditemukan' });
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
+    const id = parseInt(req.params.id);
+    if (isNaN(id) || id <= 0) {
+      return res.status(400).json({ error: 'ID tidak valid' });
+    }
+    
+    const [r] = await db.query('DELETE FROM kategori_konten WHERE id = ?', [id]);
+    if (r.affectedRows === 0) {
+      return res.status(404).json({ error: 'Kategori tidak ditemukan' });
+    }
+    res.json({ success: true, message: 'Kategori berhasil dihapus' });
+  } catch (error) {
+    sendErrorResponse(res, error, req);
   }
 });
 

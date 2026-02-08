@@ -56,16 +56,26 @@ const Header = () => {
         <div className="header-right">
           <Link to="/about-us" className="header-about-link" title="Profil Tim">About Us</Link>
           <Link to="/cms" className="header-cms-link" title="Panel Admin">CMS</Link>
-          <form onSubmit={handleSearch} className="header-search">
+          <form onSubmit={handleSearch} className="header-search" role="search">
+            <label htmlFor="header-search-input" className="sr-only">
+              Cari kelas atau dosen
+            </label>
             <input
-              type="text"
+              id="header-search-input"
+              type="search"
               placeholder="Input Kelas/Dosen"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="header-search-input"
+              aria-label="Cari kelas atau dosen"
+              autoComplete="off"
             />
-            <button type="submit" className="header-search-button">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <button 
+              type="submit" 
+              className="header-search-button"
+              aria-label="Cari"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>

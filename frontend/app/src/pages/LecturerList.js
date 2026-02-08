@@ -11,6 +11,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios (akan otomatis pakai interceptor dari axiosConfig)
+import { getErrorMessage, logError } from '../utils/errorHandler';
+import ErrorMessage from '../components/ErrorMessage';
 import './LecturerList.css';
 
 const LecturerList = () => {
@@ -28,6 +30,9 @@ const LecturerList = () => {
   
   // State untuk loading indicator (true saat fetch data, false setelah selesai)
   const [loading, setLoading] = useState(true);
+  
+  // State untuk error message
+  const [error, setError] = useState(null);
 
   // ============================================
   // FETCH DATA DOSEN
@@ -48,12 +53,15 @@ const LecturerList = () => {
         const response = await axios.get('/api/dosen');
         
         // Simpan data ke state
-        setDosenList(response.data);
-        setFilteredDosenList(response.data); // Awalnya semua dosen ditampilkan
+        setDosenList(response.data || []);
+        setFilteredDosenList(response.data || []); // Awalnya semua dosen ditampilkan
       } catch (error) {
-        // Kalau ada error, log ke console untuk debugging
-        console.error('Error fetching dosen:', error);
-        // Bisa tambahkan toast notification atau error message ke user di sini
+        // Handle error dengan utility function
+        logError('LecturerList - fetchDosen', error);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
+        setDosenList([]);
+        setFilteredDosenList([]);
       } finally {
         // Set loading ke false setelah fetch selesai (sukses atau error)
         setLoading(false);
@@ -132,6 +140,15 @@ const LecturerList = () => {
         </button>
         <h1 className="lecturer-title">Daftar Nama Dosen</h1>
       </div>
+
+      {/* Error message */}
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          dismissible 
+          onDismiss={() => setError(null)} 
+        />
+      )}
 
       {/* Search section */}
       <div className="lecturer-search-section">

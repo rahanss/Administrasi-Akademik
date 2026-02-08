@@ -2,20 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { getErrorMessage, logError } from '../utils/errorHandler';
 import './NewsList.css';
 
 const NewsList = () => {
   const navigate = useNavigate();
   const [beritaList, setBeritaList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchBerita = async () => {
       try {
+        setError(null);
         const response = await axios.get('/api/berita');
         setBeritaList(response.data || []);
       } catch (error) {
-        console.error('Error fetching berita:', error);
+        logError('NewsList - fetchBerita', error);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
         setBeritaList([]);
       } finally {
         setLoading(false);
@@ -45,7 +51,15 @@ const NewsList = () => {
         <div className="content-underline"></div>
       </div>
 
-      {beritaList.length === 0 ? (
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          dismissible 
+          onDismiss={() => setError(null)} 
+        />
+      )}
+
+      {!error && beritaList.length === 0 ? (
         <div className="news-list-empty">
           <p>Belum ada berita tersedia</p>
         </div>

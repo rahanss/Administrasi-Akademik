@@ -55,9 +55,11 @@ app.get('/health', (req, res) => {
 // Ini adalah middleware terakhir yang akan handle semua error
 // Kalau ada error di route manapun yang gak di-handle, akan masuk ke sini
 // Penting banget untuk prevent server crash dan kasih response yang user-friendly
+const { sendErrorResponse } = require('./utils/errorHandler');
+
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Log error ke console untuk debugging
-  res.status(500).json({ error: 'Something went wrong!' }); // Kasih response error ke client
+  // Gunakan error handler utility untuk response yang konsisten
+  sendErrorResponse(res, err, req);
 });
 
 // ============================================

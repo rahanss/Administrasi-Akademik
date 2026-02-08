@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
+import { getErrorMessage, logError } from '../utils/errorHandler';
 import './NewsPage.css';
 
 const NewsPage = () => {
@@ -8,40 +11,51 @@ const NewsPage = () => {
   const navigate = useNavigate();
   const [berita, setBerita] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchBerita = async () => {
+      if (!slug) {
+        setError('Slug tidak valid');
+        setLoading(false);
+        return;
+      }
+
       try {
+        setError(null);
         const response = await axios.get(`/api/berita/${slug}`);
         setBerita(response.data);
       } catch (error) {
-        console.error('Error fetching berita:', error);
+        logError('NewsPage - fetchBerita', error);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
         setBerita(null);
       } finally {
         setLoading(false);
       }
     };
 
-    if (slug) {
-      fetchBerita();
-    }
+    fetchBerita();
   }, [slug]);
 
   if (loading) {
     return (
       <div className="news-page">
-        <div className="news-loading">Memuat berita...</div>
+        <LoadingSpinner message="Memuat berita..." />
       </div>
     );
   }
 
-  if (!berita) {
+  if (error || !berita) {
     return (
       <div className="news-page">
         <div className="news-error">
-          <h2>Berita tidak ditemukan</h2>
-          <button onClick={() => navigate('/')} className="back-button">
-            Kembali ke Beranda
+          <ErrorMessage 
+            message={error || 'Berita tidak ditemukan'} 
+            dismissible={false}
+          />
+          <button onClick={() => navigate('/berita')} className="back-button">
+            ← Kembali ke Daftar Berita
           </button>
         </div>
       </div>

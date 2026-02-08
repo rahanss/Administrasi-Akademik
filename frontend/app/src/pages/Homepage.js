@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getErrorMessage, logError } from '../utils/errorHandler';
+import LoadingSpinner from '../components/LoadingSpinner';
+import ErrorMessage from '../components/ErrorMessage';
 import './Homepage.css';
 
 const Homepage = () => {
   const navigate = useNavigate();
   const [beritaList, setBeritaList] = useState([]);
   const [loadingBerita, setLoadingBerita] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchBerita = async () => {
       try {
+        setError(null);
         const response = await axios.get('/api/berita', {
           params: { limit: 3 }
         });
-        console.log('Berita fetched:', response.data);
         setBeritaList(response.data || []);
       } catch (error) {
-        console.error('Error fetching berita:', error);
-        console.error('Error details:', error.response?.data || error.message);
+        logError('Homepage - fetchBerita', error);
+        const errorMessage = getErrorMessage(error);
+        setError(errorMessage);
         setBeritaList([]);
       } finally {
         setLoadingBerita(false);
@@ -311,9 +316,11 @@ const Homepage = () => {
             </button>
           </div>
           {loadingBerita ? (
-            <div className="news-loading">Memuat berita...</div>
+            <LoadingSpinner message="Memuat berita..." size="small" />
+          ) : error ? (
+            <ErrorMessage message={error} dismissible onDismiss={() => setError(null)} />
           ) : beritaList.length === 0 ? (
-            <div className="news-loading">Belum ada berita tersedia</div>
+            <div className="news-empty" role="status">Belum ada berita tersedia</div>
           ) : (
             <div className="homepage-news-list">
               {beritaList.map((berita) => (

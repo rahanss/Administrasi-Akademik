@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../utils/axiosConfig';
+import { getErrorMessage, logError } from '../../utils/errorHandler';
+import ErrorMessage from '../../components/ErrorMessage';
+import SuccessMessage from '../../components/SuccessMessage';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { API_ENDPOINTS, SUCCESS_MESSAGES } from '../../utils/constants';
 
-const API = '/api/cms/berita';
+const API = API_ENDPOINTS.CMS_BERITA;
 
 export default function CmsBerita() {
   const [list, setList] = useState([]);
@@ -10,16 +15,20 @@ export default function CmsBerita() {
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ judul: '', slug: '', ringkasan: '', konten: '', gambar: '', published: true, featured: false });
   const [saving, setSaving] = useState(false);
-  const [err, setErr] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const fetchList = async () => {
     setLoading(true);
-    setErr('');
+    setError('');
     try {
       const { data } = await axios.get(API);
       setList(Array.isArray(data) ? data : []);
     } catch (e) {
-      setErr(e.response?.data?.error || e.message || 'Gagal memuat data');
+      logError('CmsBerita - fetchList', e);
+      const errorMessage = getErrorMessage(e);
+      setError(errorMessage);
+      setList([]);
     } finally {
       setLoading(false);
     }
@@ -31,32 +40,57 @@ export default function CmsBerita() {
     setEditing(null);
     setForm({ judul: '', slug: '', ringkasan: '', konten: '', gambar: '', published: true, featured: false });
     setModal(true);
-    setErr('');
+    setError('');
+    setSuccess('');
   };
 
   const openEdit = (r) => {
     setEditing(r);
-    setForm({ judul: r.judul, slug: r.slug, ringkasan: r.ringkasan || '', konten: r.konten || '', gambar: r.gambar || '', published: !!r.published, featured: !!r.featured });
+    setForm({ 
+      judul: r.judul || '', 
+      slug: r.slug || '', 
+      ringkasan: r.ringkasan || '', 
+      konten: r.konten || '', 
+      gambar: r.gambar || '', 
+      published: !!r.published, 
+      featured: !!r.featured 
+    });
     setModal(true);
-    setErr('');
+    setError('');
+    setSuccess('');
   };
 
-  const closeModal = () => { setModal(false); setEditing(null); };
+  const closeModal = () => { 
+    setModal(false); 
+    setEditing(null);
+    setError('');
+    setSuccess('');
+  };
 
   const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setErr('');
+    setError('');
+    setSuccess('');
+    
     try {
       if (editing) {
         await axios.put(`${API}/${editing.id}`, form);
+        setSuccess(SUCCESS_MESSAGES.UPDATED);
       } else {
         await axios.post(API, form);
+        setSuccess(SUCCESS_MESSAGES.CREATED);
       }
-      closeModal();
-      fetchList();
+      
+      // Close modal dan refresh list setelah delay singkat (untuk user lihat success message)
+      setTimeout(() => {
+        closeModal();
+        fetchList();
+      }, 1000);
     } catch (e) {
-      setErr(e.response?.data?.error || e.message);
+      logError('CmsBerita - submit', e);
+      const errorMessage = getErrorMessage(e);
+      setError(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -64,11 +98,18 @@ export default function CmsBerita() {
 
   const hapus = async (r) => {
     if (!window.confirm(`Hapus berita "${r.judul}"?`)) return;
+    
     try {
       await axios.delete(`${API}/${r.id}`);
+      setSuccess(SUCCESS_MESSAGES.DELETED);
       fetchList();
+      
+      // Auto hide success message setelah 3 detik
+      setTimeout(() => setSuccess(''), 3000);
     } catch (e) {
-      alert(e.response?.data?.error || e.message);
+      logError('CmsBerita - hapus', e);
+      const errorMessage = getErrorMessage(e);
+      setError(errorMessage);
     }
   };
 
@@ -78,12 +119,41 @@ export default function CmsBerita() {
         <h1 className="cms-page-title">Berita</h1>
         <button type="button" className="cms-btn cms-btn-primary" onClick={openCreate}>Tambah Berita</button>
       </div>
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          dismissible 
+          onDismiss={() => setError('')} 
+        />
+      )}
+      
+      {success && (
+        <SuccessMessage 
+          message={success} 
+          dismissible 
+          onDismiss={() => setSuccess('')}
+          autoHide={3}
+        />
+      )}
+
       <div className="cms-card">
         <div className="cms-table-wrap">
-          {loading && <div className="cms-loading">Memuat...</div>}
-          {!loading && err && <div className="cms-empty" style={{ color: '#dc2626' }}>{err}<br /><button type="button" className="cms-btn cms-btn-secondary cms-btn-sm" style={{ marginTop: 8 }} onClick={fetchList}>Coba lagi</button></div>}
-          {!loading && !err && list.length === 0 && <div className="cms-empty">Belum ada data.</div>}
-          {!loading && !err && list.length > 0 && (
+          {loading ? (
+            <LoadingSpinner message="Memuat data berita..." />
+          ) : error && list.length === 0 ? (
+            <div className="cms-empty">
+              <p>{error}</p>
+              <button 
+                type="button" 
+                className="cms-btn cms-btn-secondary cms-btn-sm" 
+                onClick={fetchList}
+              >
+                Coba lagi
+              </button>
+            </div>
+          ) : list.length === 0 ? (
+            <div className="cms-empty">Belum ada data.</div>
+          ) : (
             <table className="cms-table">
               <thead>
                 <tr>
@@ -123,7 +193,12 @@ export default function CmsBerita() {
             <div className="cms-modal-header">{editing ? 'Edit Berita' : 'Tambah Berita'}</div>
             <form onSubmit={submit}>
               <div className="cms-modal-body">
-                {err && <div className="cms-loading" style={{ color: '#dc2626', padding: '0 0 0.75rem' }}>{err}</div>}
+                {error && (
+                  <ErrorMessage message={error} dismissible onDismiss={() => setError('')} />
+                )}
+                {success && (
+                  <SuccessMessage message={success} dismissible onDismiss={() => setSuccess('')} autoHide={2} />
+                )}
                 <div className="cms-form-group">
                   <label>Judul *</label>
                   <input value={form.judul} onChange={e => setForm({ ...form, judul: e.target.value })} required />
@@ -152,8 +227,29 @@ export default function CmsBerita() {
                 </div>
               </div>
               <div className="cms-modal-footer">
-                <button type="button" className="cms-btn cms-btn-secondary" onClick={closeModal}>Batal</button>
-                <button type="submit" className="cms-btn cms-btn-primary" disabled={saving}>{saving ? 'Menyimpan...' : 'Simpan'}</button>
+                <button 
+                  type="button" 
+                  className="cms-btn cms-btn-secondary" 
+                  onClick={closeModal}
+                  disabled={saving}
+                >
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  className="cms-btn cms-btn-primary" 
+                  disabled={saving}
+                  aria-busy={saving}
+                >
+                  {saving ? (
+                    <>
+                      <LoadingSpinner size="small" message="" />
+                      <span style={{ marginLeft: '0.5rem' }}>Menyimpan...</span>
+                    </>
+                  ) : (
+                    editing ? 'Update' : 'Simpan'
+                  )}
+                </button>
               </div>
             </form>
           </div>
