@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-async function createAdminUser() {
+async function createAdminBiasa() {
   const connection = await mysql.createConnection({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
@@ -11,36 +11,36 @@ async function createAdminUser() {
   });
 
   try {
-    // Generate hash untuk password 'admin123'
+    // Generate hash untuk password 'admin321'
     const passwordHash = await bcrypt.hash('admin321', 10);
-    console.log('Password hash untuk admin123:', passwordHash);
+    console.log('Password hash untuk admin321:', passwordHash);
 
-    // Cek apakah user admin sudah ada
+    // Cek apakah user admin_biasa sudah ada
     const [existing] = await connection.query(
       'SELECT id, username FROM cms_users WHERE username = ?',
-      ['admin biasa']
+      ['admin_biasa']
     );
 
     if (existing.length > 0) {
-      console.log('User admin sudah ada. Mengupdate password...');
+      console.log('User admin_biasa sudah ada. Mengupdate password...');
       await connection.query(
-        'UPDATE cms_users SET password_hash = ?, aktif = 1 WHERE username = ?',
-        [passwordHash, 'admin biasa']
+        'UPDATE cms_users SET password_hash = ?, role = ?, aktif = 1 WHERE username = ?',
+        [passwordHash, 'admin', 'admin_biasa']
       );
-      console.log(' Password admin berhasil diupdate!');
+      console.log(' Password admin_biasa berhasil diupdate!');
     } else {
-      console.log('User admin belum ada. Membuat user baru...');
+      console.log('User admin_biasa belum ada. Membuat user baru...');
       await connection.query(
-        'INSERT INTO cms_users (username, password_hash, nama, email, aktif) VALUES (?, ?, ?, ?, ?)',
-        ['admin biasa', passwordHash, 'Administrator', 'admin@university.ac.id', 1]
+        'INSERT INTO cms_users (username, password_hash, nama, email, role, aktif) VALUES (?, ?, ?, ?, ?, ?)',
+        ['admin_biasa', passwordHash, 'Admin Biasa', 'admin_biasa@university.ac.id', 'admin', 1]
       );
-      console.log(' User admin berhasil dibuat!');
+      console.log(' User admin_biasa berhasil dibuat!');
     }
 
     // Verifikasi password
     const [users] = await connection.query(
       'SELECT password_hash FROM cms_users WHERE username = ?',
-      ['admin biasa']
+      ['admin_biasa']
     );
     if (users.length > 0) {
       const match = await bcrypt.compare('admin321', users[0].password_hash);
@@ -48,8 +48,9 @@ async function createAdminUser() {
     }
 
     console.log('\nLogin credentials:');
-    console.log('Username: admin biasa');
+    console.log('Username: admin_biasa');
     console.log('Password: admin321');
+    console.log('Role: admin (akses terbatas)');
   } catch (error) {
     console.error('Error:', error.message);
     if (error.code === 'ER_NO_SUCH_TABLE') {
@@ -61,4 +62,4 @@ async function createAdminUser() {
   }
 }
 
-createAdminUser();
+createAdminBiasa();

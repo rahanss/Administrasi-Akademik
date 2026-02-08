@@ -29,13 +29,6 @@ export default function CmsMenu() {
 
   useEffect(() => { fetchList(); }, []);
 
-  const openCreate = () => {
-    setEditing(null);
-    setForm({ kategori_id: '', parent_id: '', nama: '', slug: '', urutan: 0, icon: '', tipe: 'akademik' });
-    setModal(true);
-    setErr('');
-  };
-
   const openEdit = (r) => {
     setEditing(r);
     setForm({ kategori_id: r.kategori_id || '', parent_id: r.parent_id || '', nama: r.nama, slug: r.slug, urutan: r.urutan || 0, icon: r.icon || '', tipe: r.tipe || 'akademik' });
@@ -47,12 +40,15 @@ export default function CmsMenu() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!editing) {
+      setErr('Mode Edit Only: Tidak dapat menambah menu baru. Hanya dapat mengedit menu yang sudah ada.');
+      return;
+    }
     setSaving(true);
     setErr('');
     try {
       const payload = { ...form, kategori_id: form.kategori_id || null, parent_id: form.parent_id || null };
-      if (editing) await axios.put(`${API}/${editing.id}`, payload);
-      else await axios.post(API, payload);
+      await axios.put(`${API}/${editing.id}`, payload);
       closeModal();
       fetchList();
     } catch (e) {
@@ -76,7 +72,9 @@ export default function CmsMenu() {
     <>
       <div className="cms-page-header">
         <h1 className="cms-page-title">Menu Sidebar</h1>
-        <button type="button" className="cms-btn cms-btn-primary" onClick={openCreate}>Tambah Menu</button>
+        <div style={{ fontSize: '0.9rem', color: '#6b7280', fontStyle: 'italic' }}>
+          Mode Edit Only: Hanya dapat mengedit menu yang sudah ada
+        </div>
       </div>
       <div className="cms-card">
         <div className="cms-table-wrap">
@@ -118,10 +116,10 @@ export default function CmsMenu() {
         </div>
       </div>
 
-      {modal && (
+      {modal && editing && (
         <div className="cms-modal-overlay" onClick={closeModal}>
           <div className="cms-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 440 }}>
-            <div className="cms-modal-header">{editing ? 'Edit Menu' : 'Tambah Menu'}</div>
+            <div className="cms-modal-header">Edit Menu</div>
             <form onSubmit={submit}>
               <div className="cms-modal-body">
                 {err && <div style={{ color: '#dc2626', padding: '0 0 0.75rem', fontSize: '0.9rem' }}>{err}</div>}

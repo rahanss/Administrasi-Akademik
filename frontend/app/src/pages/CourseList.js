@@ -186,7 +186,7 @@ const CourseList = () => {
           {documentPath ? (
             <>
               <div className="document-header">
-                <h3 className="document-title">📄 Dokumen Daftar Mata Kuliah</h3>
+                <h3 className="document-title"> Dokumen Daftar Mata Kuliah</h3>
                 <a 
                   href={documentPath} 
                   target="_blank" 
@@ -213,7 +213,7 @@ const CourseList = () => {
             </>
           ) : (
             <div className="document-header">
-              <h3 className="document-title">📄 Dokumen Daftar Mata Kuliah</h3>
+              <h3 className="document-title"> Dokumen Daftar Mata Kuliah</h3>
               <p style={{ color: 'var(--text-secondary)', marginTop: '1rem' }}>
                 Dokumen untuk program studi ini sedang dalam proses persiapan.
               </p>

@@ -22,7 +22,7 @@ const requireAuth = async (req, res, next) => {
       return res.status(401).json({ error: 'Unauthorized - Token required' });
     }
     const decoded = jwt.verify(token, JWT_SECRET);
-    const [users] = await db.query('SELECT id, username, nama, email, aktif FROM cms_users WHERE id = ? AND aktif = 1', [decoded.userId]);
+    const [users] = await db.query('SELECT id, username, nama, email, role, aktif FROM cms_users WHERE id = ? AND aktif = 1', [decoded.userId]);
     if (!users.length) {
       return res.status(401).json({ error: 'Unauthorized - User not found or inactive' });
     }
@@ -31,6 +31,14 @@ const requireAuth = async (req, res, next) => {
   } catch (e) {
     res.status(401).json({ error: 'Unauthorized - Invalid token' });
   }
+};
+
+// Middleware untuk require super_admin role
+const requireSuperAdmin = (req, res, next) => {
+  if (req.user.role !== 'super_admin') {
+    return res.status(403).json({ error: 'Forbidden - Super Admin access required' });
+  }
+  next();
 };
 
 // ============ AUTH ============
@@ -60,7 +68,8 @@ router.post('/auth/login', async (req, res) => {
         id: user.id,
         username: user.username,
         nama: user.nama,
-        email: user.email
+        email: user.email,
+        role: user.role || 'admin'
       }
     });
   } catch (e) {
@@ -75,7 +84,8 @@ router.get('/auth/me', requireAuth, async (req, res) => {
       id: req.user.id,
       username: req.user.username,
       nama: req.user.nama,
-      email: req.user.email
+      email: req.user.email,
+      role: req.user.role || 'admin'
     }
   });
 });
@@ -102,6 +112,19 @@ router.use((req, res, next) => {
   }
   return requireAuth(req, res, next);
 });
+
+// Role-based access: Super Admin only routes
+// Menu, Kategori, Dosen, Prodi, Mata Kuliah, Koordinator, Dosen PI, Jadwal (semua master data)
+router.use('/menu', requireSuperAdmin);
+router.use('/kategori', requireSuperAdmin);
+router.use('/dosen', requireSuperAdmin);
+router.use('/prodi', requireSuperAdmin);
+router.use('/mata-kuliah', requireSuperAdmin);
+router.use('/koordinator', requireSuperAdmin);
+router.use('/dosen-pembimbing-pi', requireSuperAdmin);
+router.use('/jadwal-kelas', requireSuperAdmin);
+router.use('/jadwal-kuliah', requireSuperAdmin);
+router.use('/jadwal-ujian', requireSuperAdmin);
 
 // ============ KATEGORI ============
 router.get('/kategori', async (req, res) => {
@@ -194,18 +217,8 @@ router.get('/menu/:id', async (req, res) => {
 });
 
 router.post('/menu', async (req, res) => {
-  try {
-    const { kategori_id, parent_id, nama, slug, urutan, icon, tipe } = req.body;
-    const s = slug || slugify(nama);
-    await db.query(
-      'INSERT INTO menu_sidebar (kategori_id, parent_id, nama, slug, urutan, icon, tipe) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [kategori_id || null, parent_id || null, nama || '', s, urutan != null ? urutan : 0, icon || null, tipe || 'akademik']
-    );
-    const [r] = await db.query('SELECT * FROM menu_sidebar ORDER BY id DESC LIMIT 1');
-    res.status(201).json(r[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  // Edit Only Mode: Tidak dapat menambah menu baru
+  res.status(403).json({ error: 'Mode Edit Only: Tidak dapat menambah menu baru. Hanya dapat mengedit menu yang sudah ada.' });
 });
 
 router.put('/menu/:id', async (req, res) => {
@@ -379,18 +392,8 @@ router.get('/halaman/:id', async (req, res) => {
 });
 
 router.post('/halaman', async (req, res) => {
-  try {
-    const { menu_id, kategori_id, judul, slug, konten, tipe_konten, meta_deskripsi, published } = req.body;
-    const s = slug || slugify(judul);
-    await db.query(
-      'INSERT INTO halaman_konten (menu_id, kategori_id, judul, slug, konten, tipe_konten, meta_deskripsi, published) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [menu_id || null, kategori_id || null, judul || '', s, konten || '', tipe_konten || 'narrative', meta_deskripsi || null, published !== false ? 1 : 0]
-    );
-    const [r] = await db.query('SELECT * FROM halaman_konten ORDER BY id DESC LIMIT 1');
-    res.status(201).json(r[0]);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  // Edit Only Mode: Tidak dapat menambah halaman baru
+  res.status(403).json({ error: 'Mode Edit Only: Tidak dapat menambah halaman baru. Hanya dapat mengedit halaman yang sudah ada.' });
 });
 
 router.put('/halaman/:id', async (req, res) => {

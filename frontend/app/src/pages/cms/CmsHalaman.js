@@ -32,13 +32,6 @@ export default function CmsHalaman() {
 
   useEffect(() => { fetchList(); }, []);
 
-  const openCreate = () => {
-    setEditing(null);
-    setForm({ menu_id: '', kategori_id: '', judul: '', slug: '', konten: '', tipe_konten: 'narrative', meta_deskripsi: '', published: true });
-    setModal(true);
-    setErr('');
-  };
-
   const openEdit = (r) => {
     setEditing(r);
     setForm({ menu_id: r.menu_id || '', kategori_id: r.kategori_id || '', judul: r.judul, slug: r.slug, konten: r.konten || '', tipe_konten: r.tipe_konten || 'narrative', meta_deskripsi: r.meta_deskripsi || '', published: !!r.published });
@@ -50,12 +43,15 @@ export default function CmsHalaman() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (!editing) {
+      setErr('Mode Edit Only: Tidak dapat menambah halaman baru. Hanya dapat mengedit halaman yang sudah ada.');
+      return;
+    }
     setSaving(true);
     setErr('');
     try {
       const payload = { ...form, menu_id: form.menu_id || null, kategori_id: form.kategori_id || null };
-      if (editing) await axios.put(`${API}/${editing.id}`, payload);
-      else await axios.post(API, payload);
+      await axios.put(`${API}/${editing.id}`, payload);
       closeModal();
       fetchList();
     } catch (e) {
@@ -79,7 +75,9 @@ export default function CmsHalaman() {
     <>
       <div className="cms-page-header">
         <h1 className="cms-page-title">Halaman Konten</h1>
-        <button type="button" className="cms-btn cms-btn-primary" onClick={openCreate}>Tambah Halaman</button>
+        <div style={{ fontSize: '0.9rem', color: '#6b7280', fontStyle: 'italic' }}>
+          Mode Edit Only: Hanya dapat mengedit halaman yang sudah ada
+        </div>
       </div>
       <div className="cms-card">
         <div className="cms-table-wrap">
@@ -119,10 +117,10 @@ export default function CmsHalaman() {
         </div>
       </div>
 
-      {modal && (
+      {modal && editing && (
         <div className="cms-modal-overlay" onClick={closeModal}>
           <div className="cms-modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 640 }}>
-            <div className="cms-modal-header">{editing ? 'Edit Halaman' : 'Tambah Halaman'}</div>
+            <div className="cms-modal-header">Edit Halaman</div>
             <form onSubmit={submit}>
               <div className="cms-modal-body">
                 {err && <div style={{ color: '#dc2626', padding: '0 0 0.75rem', fontSize: '0.9rem' }}>{err}</div>}

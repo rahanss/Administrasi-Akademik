@@ -31,6 +31,13 @@ export default function CmsLogin() {
   return (
     <div className="cms-login-page">
       <div className="cms-login-container">
+        <button 
+          onClick={() => navigate('/')} 
+          className="cms-login-back-btn"
+          type="button"
+        >
+          ← Kembali ke Homepage
+        </button>
         <div className="cms-login-header">
           <h1>CMS Login</h1>
           <p>Content Management System</p>
@@ -64,6 +71,9 @@ export default function CmsLogin() {
         </form>
         <div className="cms-login-footer">
           <p>Untuk menambahkan user baru, hubungi administrator atau tambahkan langsung ke database.</p>
+          <a href="/" className="cms-login-footer-link">
+            ← Kembali ke Homepage
+          </a>
         </div>
       </div>
     </div>

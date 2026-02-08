@@ -14,6 +14,26 @@
   padding: 3rem;
   width: 100%;
   max-width: 420px;
+  position: relative;
+}
+
+.cms-login-back-btn {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  color: #1e40af;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+
+.cms-login-back-btn:hover {
+  color: #3b82f6;
+  text-decoration: underline;
 }
 
 .cms-login-header {
@@ -108,8 +128,23 @@
 }
 
 .cms-login-footer p {
-  margin: 0;
+  margin: 0 0 0.75rem 0;
   color: #888;
   font-size: 0.85rem;
   line-height: 1.5;
+}
+
+.cms-login-footer-link {
+  display: inline-block;
+  color: #1e40af;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  margin-top: 0.5rem;
+}
+
+.cms-login-footer-link:hover {
+  color: #3b82f6;
+  text-decoration: underline;
 }

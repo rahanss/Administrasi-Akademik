@@ -12,6 +12,7 @@ const CmsLayout = () => {
   };
 
   const user = JSON.parse(localStorage.getItem('cms_user') || '{}');
+  const isSuperAdmin = user.role === 'super_admin';
 
   const getIcon = (to) => {
     const iconMap = {
@@ -32,41 +33,52 @@ const CmsLayout = () => {
     return iconMap[to] || '/icons/PanduanAdministrasi.png';
   };
 
+  // Menu berdasarkan role
+  // Admin: Hanya Konten (Berita, Halaman, Layanan)
+  // Super Admin: Semua menu
   const nav = [
     { section: 'Konten', items: [
-      { to: 'berita', label: 'Berita' },
-      { to: 'halaman', label: 'Halaman' },
+      { to: 'berita', label: 'Berita', adminOnly: false },
+      { to: 'halaman', label: 'Halaman', adminOnly: false },
+      { to: 'layanan', label: 'Layanan', adminOnly: false },
     ]},
-    { section: 'Master', items: [
-      { to: 'prodi', label: 'Program Studi' },
-      { to: 'dosen', label: 'Dosen' },
-      { to: 'mata-kuliah', label: 'Mata Kuliah' },
-      { to: 'layanan', label: 'Layanan' },
-    ]},
-    { section: 'Struktur', items: [
-      { to: 'kategori', label: 'Kategori' },
-      { to: 'menu', label: 'Menu' },
-    ]},
-    { section: 'Akademik', items: [
-      { to: 'koordinator', label: 'Koordinator MK' },
-      { to: 'dosen-pi', label: 'Dosen Pembimbing PI' },
-      { to: 'jadwal-kelas', label: 'Jadwal Kelas' },
-      { to: 'jadwal-kuliah', label: 'Jadwal Kuliah' },
-      { to: 'jadwal-ujian', label: 'Jadwal Ujian' },
-    ]},
+    ...(isSuperAdmin ? [{
+      section: 'Master', items: [
+        { to: 'prodi', label: 'Program Studi', adminOnly: true },
+        { to: 'dosen', label: 'Dosen', adminOnly: true },
+        { to: 'mata-kuliah', label: 'Mata Kuliah', adminOnly: true },
+      ]
+    }] : []),
+    ...(isSuperAdmin ? [{
+      section: 'Struktur', items: [
+        { to: 'kategori', label: 'Kategori', adminOnly: true },
+        { to: 'menu', label: 'Menu', adminOnly: true },
+      ]
+    }] : []),
+    ...(isSuperAdmin ? [{
+      section: 'Akademik', items: [
+        { to: 'koordinator', label: 'Koordinator MK', adminOnly: true },
+        { to: 'dosen-pi', label: 'Dosen Pembimbing PI', adminOnly: true },
+        { to: 'jadwal-kelas', label: 'Jadwal Kelas', adminOnly: true },
+        { to: 'jadwal-kuliah', label: 'Jadwal Kuliah', adminOnly: true },
+        { to: 'jadwal-ujian', label: 'Jadwal Ujian', adminOnly: true },
+      ]
+    }] : []),
   ];
 
   return (
     <div className="cms-layout">
       <aside className="cms-sidebar">
         <div className="cms-sidebar-header">
-          <span className="cms-sidebar-title">CMS BAAK</span>
+          <span className="cms-sidebar-title">CMS PIAM</span>
           <a href="/" className="cms-sidebar-back">Ke Website</a>
         </div>
         <div className="cms-sidebar-user">
           <div className="cms-sidebar-user-info">
             <span className="cms-sidebar-user-name">{user.nama || user.username || 'User'}</span>
-            <span className="cms-sidebar-user-role">Administrator</span>
+            <span className="cms-sidebar-user-role">
+              {isSuperAdmin ? 'Super Administrator' : 'Administrator'}
+            </span>
           </div>
           <button type="button" className="cms-sidebar-logout" onClick={handleLogout}>
             Logout
